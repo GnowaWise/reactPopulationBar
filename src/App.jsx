@@ -65,7 +65,7 @@ function App() {
       },
       title: {
         display: true,
-        text: `Total ${populationData[0][0]} population: ${populationData[0][1]}`,
+        text: `Total ${populationData[0][0]} population: ${populationData[0][1].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`,
       },
     },
   };
