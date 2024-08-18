@@ -10,9 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "chart.js": "^4.4.3",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-papaparse": "^4.4.0"
   },
   "devDependencies": {
     "@rollup/plugin-dsv": "^3.0.4",
