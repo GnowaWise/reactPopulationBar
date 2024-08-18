@@ -65,14 +65,14 @@ function App() {
       },
       title: {
         display: true,
-        text: `Total ${populationData[0][0]} population: ${populationData[0][1].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`,
+        text: `Total ${populationData[0][0]} Population in year ${input} : ${populationData[0][1].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`,
       },
     },
   };
   const dataset = {
     labels: populationData[1].map((data) => data[0]),
     datasets: [{
-      label: 'Population growth by country',
+      label: 'Population growth',
       data: populationData[1].map((data) => data[1]),
       borderColor: ['rgb(255, 153, 153)',
         'rgb(255, 204, 153)',
