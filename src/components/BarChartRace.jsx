@@ -33,7 +33,7 @@ const BarChartRace = ({ populationCSV }) => {
   const animationRef = useRef(null);
   const chartRef = useRef(null);
 
-  const nbr = 10;
+  const nbr = 11;
   const minYear = 1950;
   const maxYear = 2021;
 
@@ -202,8 +202,8 @@ const BarChartRace = ({ populationCSV }) => {
           <div
             style={{
               position: 'absolute',
-              left: `${((year - minYear) / (maxYear - minYear)) * 100}%`,
-              top: '100%',
+              left: `${((year+1 - minYear) / (maxYear - minYear)) * 100}%`,
+              top: '50%',
               transform: 'translateX(-50%)',
               background: '#007bff',
               color: 'white',
