@@ -29,7 +29,7 @@ const BarChartRace = ({ populationCSV }) => {
   const [sortedCountries, setSortedCountries] = useState([]);
   const [animatedPopulations, setAnimatedPopulations] = useState([]);
   const [countryColors, setCountryColors] = useState({});
-  const [worldPopulation, setWorldPopulation] = useState();
+  const [worldPopulation, setWorldPopulation] = useState([{world: 0,population: 0}]);
   const animationRef = useRef(null);
   const chartRef = useRef(null);
 
