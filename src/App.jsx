@@ -193,14 +193,14 @@
 
 // export default App
 
-import BarChartRace from './components/BarChartRace';
+// import BarChartRace from './components/BarChartRace';
+import BarChartRace from './components/BarChartRaceHighChart';
 import populationCSV from './assets/population-and-demography.csv';
 
 function App() {
   return (
     <div className="App">
       <BarChartRace populationCSV={populationCSV} />
-      {/* <EnhancedBarChartRace populationData={populationCSV} /> */}
     </div>
   );
 }
