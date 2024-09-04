@@ -10,6 +10,7 @@ const BarChartRace = ({ populationCSV }) => {
     world: 0,
     population: 0,
   });
+  const [displayedPopulation, setDisplayedPopulation] = useState(0);
   const chartRef = useRef(null);
 
   const nbr = 11;
@@ -38,6 +39,46 @@ const BarChartRace = ({ populationCSV }) => {
     }
     return () => clearInterval(intervalId);
   }, [isPlaying]);
+
+  useEffect(() => {
+    let animationInterval;
+    if (worldPopulation.population !== displayedPopulation) {
+      const step = (worldPopulation.population - displayedPopulation) / 10;
+      animationInterval = setInterval(() => {
+        setDisplayedPopulation((prev) => {
+          const newPopulation = prev + step;
+          if (
+            (step > 0 && newPopulation >= worldPopulation.population) ||
+            (step < 0 && newPopulation <= worldPopulation.population)
+          ) {
+            clearInterval(animationInterval);
+            return worldPopulation.population;
+          }
+          return newPopulation;
+        });
+      }, 50);
+    }
+    return () => clearInterval(animationInterval);
+  }, [worldPopulation]);
+
+  useEffect(() => {
+    if (chartRef.current && chartRef.current.chart) {
+      const chart = chartRef.current.chart;
+      const series = chart.series[0];
+
+      const brandNewPopulation = populationData.map((item,i) => ({
+        name: item.name,
+        y: item.y,
+      }
+    //   ,console.log(item)
+    ));
+    //   console.log(brandNewPopulation)
+      for (let i = 0; i < series.data.length; i++) {
+        series.data[i].update(brandNewPopulation[i], false, false);
+      }
+      chart.redraw();
+    }
+  }, [populationData]);
 
   function getData(year, data) {
     let output = data
@@ -109,7 +150,7 @@ const BarChartRace = ({ populationCSV }) => {
     series: [
       {
         name: year.toString(),
-        data: populationData,
+        data: populationData
       },
     ],
     responsive: {
@@ -151,7 +192,7 @@ const BarChartRace = ({ populationCSV }) => {
   });
 
   const getSubtitle = () => {
-    const population = (worldPopulation.population/1000000000).toFixed(2);
+    const population = (displayedPopulation / 1000000000).toFixed(2);
     return `<span style="font-size: 80px">${year}</span>
             <br>
             <span style="font-size: 22px">
