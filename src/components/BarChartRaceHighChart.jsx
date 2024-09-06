@@ -108,6 +108,7 @@ const BarChartRace = ({ populationCSV }) => {
       //   },
       // },
     },
+    tooltip: { enabled: false },
     title: {
       text: "World population by country",
       align: "left",
