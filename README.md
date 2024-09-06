@@ -1,7 +1,7 @@
 
 # React Population growth bar chart race
 
-This project using library chart js to create a bar chart race with population growth data in csv file [Link to project](https://react-population-bar.vercel.app/)
+This project using Highcharts library to create a bar chart race with population growth data in csv file [Link to project](https://react-population-bar.vercel.app/)
 
 - run **`pnpm i`** or **`pnpm install`** to install a dependency beford running project
 
