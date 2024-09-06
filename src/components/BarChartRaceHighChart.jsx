@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { format } from "highcharts";
+import axios from "axios";
 
 const BarChartRace = ({ populationCSV }) => {
   const [year, setYear] = useState(1950);
@@ -22,7 +22,7 @@ const BarChartRace = ({ populationCSV }) => {
     const myJSONParse = JSON.parse(
       JSON.stringify(populationCSV).replaceAll("Country name", "countryName")
     );
-    getData(year, myJSONParse);
+    getData(year, myJSONParse).catch(error => console.error("Error:", error));
   }, [year, populationCSV]);
 
   useEffect(() => {
@@ -41,7 +41,19 @@ const BarChartRace = ({ populationCSV }) => {
     return () => clearInterval(intervalId);
   }, [isPlaying]);
 
-  function getData(year, data) {
+  const getCountryImg = async (countryName) => {
+    try {
+      const response = await axios.get(`https://restcountries.com/v3.1/name/${countryName}`);
+      return response.data[0]?.flags?.png;
+    } catch (error) {
+      console.error(`Error fetching code for ${countryName}:`, error);
+      return null; // Handle cases where country is not found
+    }
+  };
+
+
+
+  async function getData(year, data) {
     let output = data
       .filter(
         (item) =>
@@ -56,32 +68,45 @@ const BarChartRace = ({ populationCSV }) => {
       }));
 
     output.sort((a, b) => b.y - a.y);
+    const slicedOutput = output.slice(1, nbr);
+
+    const outputWithFlag = await Promise.all(
+      slicedOutput.map(async (item) => {
+        const imgUrl = await getCountryImg(item.name);
+        return {
+          name: item.name,
+          y: Number(item.y),
+          imageUrl: imgUrl || ""
+        };
+      })
+    );
+    // console.log(outputWithFlag)
     setWorldPopulation({ population: output[0].y });
-    setPopulationData(output.slice(1, nbr));
+    setPopulationData(outputWithFlag);
   }
 
   const getChartOptions = () => ({
     chart: {
       type: "bar",
       animation: {
-        duration: 200,
+        duration: 300,
       },
       marginRight: 50,
-      events: {
-        load: function () {
-          this.series[0].data.forEach(function (point, i) {
-            point.update({ y: 0 }, false);
-          });
-          this.redraw({ duration: 0 });
+      // events: {
+      //   load: function () {
+      //     this.series[0].data.forEach(function (point, i) {
+      //       point.update({ y: 0 }, false);
+      //     });
+      //     this.redraw({ duration: 0 });
 
-          setTimeout(() => {
-            this.series[0].data.forEach(function (point, i) {
-              point.update({ y: populationData[i].y }, false);
-            });
-            this.redraw({ duration: 1000 });
-          }, 100);
-        },
-      },
+      //     setTimeout(() => {
+      //       this.series[0].data.forEach(function (point, i) {
+      //         point.update({ y: populationData[i].y }, false);
+      //       });
+      //       this.redraw({ duration: 1000 });
+      //     }, 100);
+      //   },
+      // },
     },
     title: {
       text: "World population by country",
@@ -112,7 +137,7 @@ const BarChartRace = ({ populationCSV }) => {
     plotOptions: {
       series: {
         animation: {
-          duration: 500,
+          duration: 100,
           defer: 100,
         },
         groupPadding: 0,
@@ -126,10 +151,13 @@ const BarChartRace = ({ populationCSV }) => {
         type: "bar",
         dataLabels: {
           enabled: true,
+          useHTML: true,
           // format: "{point.y:.3f}",
           formatter: function () {
-            return Highcharts.numberFormat(this.point.y, 0, 3, ",");
+            return `<img style="height: 20px;width: 30px;padding-right:5px" src="${this.point.imageUrl}" alt={${this.point.name}} /> ${Highcharts.numberFormat(this.point.y, 0, 3, ",")}`;
           },
+          x: -40,
+          y: 1
         },
       },
     },
@@ -143,7 +171,7 @@ const BarChartRace = ({ populationCSV }) => {
       rules: [
         {
           condition: {
-            maxWidth: 550,
+            maxWidth: 650,
           },
           chartOptions: {
             xAxis: {
@@ -177,19 +205,19 @@ const BarChartRace = ({ populationCSV }) => {
     },
   });
 
-  useEffect(() => {
-    if (chartRef.current && chartRef.current.chart) {
-      const chart = chartRef.current.chart;
-      chart.series[0].setData(populationData, true, { duration: 500 });
-    }
-  }, [populationData]);
+  // useEffect(() => {
+  //   if (chartRef.current && chartRef.current.chart) {
+  //     const chart = chartRef.current.chart;
+  //     chart.series[0].setData(populationData, true, { duration: 500 });
+  //   }
+  // }, [populationData]);
 
   const getSubtitle = () => {
-    const population = (worldPopulation.population / 1000000000).toFixed(2);
+    // const population = (worldPopulation.population / 1000000000).toFixed(2);
     return `<span style="font-size: 80px">${year}</span>
             <br>
             <span style="font-size: 22px">
-                Total: <b>: ${population}</b> billion
+                Total: <b>: ${worldPopulation.population.toLocaleString()}</b>
             </span>`;
   };
 
